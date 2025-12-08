@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriSage - AI Recipe Generator for Health</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sage-50: #f4f7f0;
+            --sage-100: #e6ebe0;
+            --sage-200: #cdd9c0;
+            --sage-300: #a8bc94;
+            --sage-400: #7d9a63;
+            --sage-500: #5c7a44;
+            --sage-600: #486135;
+            --sage-700: #3a4d2c;
+            --sage-800: #303f26;
+            --sage-900: #293522;
+            --cream: #faf9f5;
+            --cream-dark: #f0ede5;
+            --terracotta: #c4785a;
+            --terracotta-light: #e8a88a;
+            --gold: #c9a54d;
+            --text: #1a1f16;
+            --text-muted: #5a6352;
+            --error: #c45a5a;
+            --success: #5a8c5a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Background texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 15% 15%, rgba(125, 154, 99, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 85%, rgba(201, 165, 77, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(196, 120, 90, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--sage-700) 0%, var(--sage-800) 100%);
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(48, 63, 38, 0.2);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--terracotta) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .brand-text h1 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-text span {
+            font-size: 0.75rem;
+            color: var(--sage-200);
+            font-weight: 400;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 24px;
+            font-size: 0.8rem;
+            color: var(--sage-100);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline { background: var(--error); animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Layout */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+
+        /* Chat Panel */
+        .chat-panel {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(48, 63, 38, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--sage-100);
+            min-height: 600px;
+        }
+
+        .chat-header {
+            padding: 1.25rem 1.5rem;
+            background: var(--sage-50);
+            border-bottom: 1px solid var(--sage-100);
+        }
+
+        .chat-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--sage-700);
+        }
+
+        .messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Messages */
+        .message {
+            display: flex;
+            gap: 0.875rem;
+            animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user { flex-direction: row-reverse; }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .avatar.bot { background: linear-gradient(135deg, var(--sage-400), var(--sage-500)); }
+        .avatar.user { background: linear-gradient(135deg, var(--terracotta), var(--terracotta-light)); }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            font-size: 0.95rem;
+        }
+
+        .message.bot .message-bubble {
+            background: var(--sage-50);
+            border: 1px solid var(--sage-100);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, var(--sage-600), var(--sage-700));
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Recipe Card */
+        .recipe-card {
+            background: white;
+            border: 1px solid var(--sage-200);
+            border-radius: 16px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .recipe-header {
+            background: linear-gradient(135deg, var(--sage-500), var(--sage-600));
+            padding: 1rem 1.25rem;
+            color: white;
+        }
+
+        .recipe-header h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recipe-body {
+            padding: 1.25rem;
+            font-size: 0.9rem;
+            white-space: pre-line;
+            line-height: 1.7;
+        }
+
+        .recipe-body strong { color: var(--sage-700); }
+
+        /* Classification Badge */
+        .classification {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--sage-500), var(--sage-600));
+            color: white;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .confidence-bar {
+            width: 50px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+        }
+
+        /* Ingredients List */
+        .ingredients-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.75rem 0;
+        }
+
+        .ing-tag {
+            background: var(--sage-100);
+            color: var(--sage-700);
+            padding: 0.3rem 0.7rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1.25rem 1.5rem;
+            background: var(--cream-dark);
+            border-top: 1px solid var(--sage-100);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        #queryInput {
+            flex: 1;
+            padding: 0.9rem 1.1rem;
+            border: 2px solid var(--sage-200);
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        #queryInput:focus {
+            outline: none;
+            border-color: var(--sage-400);
+            box-shadow: 0 0 0 4px rgba(125, 154, 99, 0.15);
+        }
+
+        .send-btn {
+            padding: 0 1.5rem;
+            background: linear-gradient(135deg, var(--sage-500), var(--sage-600));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(92, 122, 68, 0.3); }
+        .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* Suggestions */
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .suggestion {
+            background: white;
+            border: 1px solid var(--sage-200);
+            padding: 0.5rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--sage-700);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion:hover {
+            background: var(--sage-100);
+            border-color: var(--sage-400);
+        }
+
+        /* Side Panel */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--sage-100);
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(48, 63, 38, 0.06);
+        }
+
+        .panel-header {
+            padding: 1rem 1.25rem;
+            background: var(--sage-50);
+            border-bottom: 1px solid var(--sage-100);
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--sage-700);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-body {
+            padding: 1.25rem;
+        }
+
+        /* Model Selector */
+        .model-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .model-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--sage-100);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .model-option:hover { border-color: var(--sage-300); }
+        .model-option.active { border-color: var(--sage-500); background: var(--sage-50); }
+
+        .model-option input { display: none; }
+
+        .model-radio {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--sage-300);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .model-option.active .model-radio {
+            border-color: var(--sage-500);
+        }
+
+        .model-option.active .model-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--sage-500);
+            border-radius: 50%;
+        }
+
+        .model-name { font-weight: 500; font-size: 0.9rem; }
+        .model-size { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Categories List */
+        .categories-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.9rem;
+            background: var(--sage-50);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-item:hover { background: var(--sage-100); }
+
+        .category-count {
+            background: var(--sage-200);
+            color: var(--sage-700);
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Typing Indicator */
+        .typing {
+            display: flex;
+            gap: 4px;
+            padding: 0.5rem 0;
+        }
+
+        .typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--sage-400);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(1); opacity: 0.4; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+
+        /* Welcome */
+        .welcome {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .welcome h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            color: var(--sage-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome p {
+            color: var(--text-muted);
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(196, 120, 90, 0.08);
+            border: 1px solid rgba(196, 120, 90, 0.2);
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: var(--terracotta);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--sage-200); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--sage-300); }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(250, 249, 245, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .loader {
+            text-align: center;
+        }
+
+        .loader-icon {
+            font-size: 3rem;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                <div class="logo">🌿</div>
+                <div class="brand-text">
+                    <h1>NutriSage</h1>
+                    <span>AI-Powered Recipe Generator for Health</span>
+                </div>
+            </div>
+            <div class="status-badge">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="chat-panel">
+            <div class="chat-header">
+                <h2>💬 Health Recipe Chat</h2>
+            </div>
+            
+            <div class="messages" id="messages">
+                <div class="welcome">
+                    <div class="welcome-icon">🥗</div>
+                    <h2>Welcome to NutriSage</h2>
+                    <p>Describe your health concern, and I'll create a personalized recipe using beneficial ingredients.</p>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        id="queryInput" 
+                        placeholder="Describe how you're feeling... (e.g., 'I have trouble sleeping')"
+                        onkeydown="handleKeyDown(event)"
+                    >
+                    <button class="send-btn" onclick="sendQuery()" id="sendBtn">
+                        Generate Recipe →
+                    </button>
+                </div>
+                <div class="suggestions">
+                    <button class="suggestion" onclick="useSuggestion('I have trouble sleeping at night')">💤 Sleep issues</button>
+                    <button class="suggestion" onclick="useSuggestion('My stomach feels upset and bloated')">🫃 Digestive problems</button>
+                    <button class="suggestion" onclick="useSuggestion('I feel tired and have no energy')">⚡ Low energy</button>
+                    <button class="suggestion" onclick="useSuggestion('I want to boost my immune system')">🛡️ Immune support</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="panel-card">
+                <div class="panel-header">📚 Health Categories</div>
+                <div class="panel-body">
+                    <div class="categories-list" id="categoriesList">
+                        <div class="category-item">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">ℹ️ How it works</div>
+                <div class="panel-body" style="font-size: 0.85rem; color: var(--text-muted);">
+                    <p><strong>1. Classification</strong><br>Your query is analyzed to identify the health category.</p>
+                    <p style="margin-top: 0.75rem;"><strong>2. Retrieval</strong><br>Relevant ingredients are fetched from our database of 260+ items.</p>
+                    <p style="margin-top: 0.75rem;"><strong>3. Generation</strong><br>A local LLM creates a personalized recipe using those ingredients.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader">
+            <div class="loader-icon">🌿</div>
+            <p style="margin-top: 1rem; color: var(--sage-700);">Generating your recipe...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentModel = 'mistral';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkHealth();
+            loadCategories();
+            setupModelSelector();
+        });
+
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${API_BASE}/api/health`);
+                const data = await res.json();
+                
+                const dot = document.getElementById('statusDot');
+                const text = document.getElementById('statusText');
+                
+                if (data.ollama === 'connected') {
+                    dot.classList.remove('offline');
+                    text.textContent = `${data.model} ready`;
+                } else {
+                    dot.classList.add('offline');
+                    text.textContent = 'Ollama offline';
+                }
+            } catch {
+                document.getElementById('statusDot').classList.add('offline');
+                document.getElementById('statusText').textContent = 'API offline';
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const res = await fetch(`${API_BASE}/api/categories`);
+                const data = await res.json();
+                
+                const list = document.getElementById('categoriesList');
+                list.innerHTML = data.categories.slice(0, 12).map(cat => `
+                    <div class="category-item" onclick="useSuggestion('I have ${cat.name.toLowerCase()} issues')">
+                        <span>${cat.name}</span>
+                        <span class="category-count">${cat.ingredient_count}</span>
+                    </div>
+                `).join('');
+            } catch {
+                document.getElementById('categoriesList').innerHTML = '<div class="category-item">Failed to load</div>';
+            }
+        }
+
+        function setupModelSelector() {
+            document.querySelectorAll('.model-option').forEach(option => {
+                option.addEventListener('click', async () => {
+                    document.querySelectorAll('.model-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    const input = option.querySelector('input');
+                    input.checked = true;
+                    currentModel = input.value;
+                    
+                    try {
+                        await fetch(`${API_BASE}/api/model`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ model: currentModel })
+                        });
+                        checkHealth();
+                    } catch {}
+                });
+            });
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendQuery();
+            }
+        }
+
+        function useSuggestion(text) {
+            document.getElementById('queryInput').value = text;
+            sendQuery();
+        }
+
+        function addMessage(content, isUser = false, isHtml = false) {
+            const messages = document.getElementById('messages');
+            
+            // Remove welcome if present
+            const welcome = messages.querySelector('.welcome');
+            if (welcome) welcome.remove();
+            
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            div.innerHTML = `
+                <div class="avatar ${isUser ? 'user' : 'bot'}">${isUser ? '👤' : '🌿'}</div>
+                <div class="message-bubble">${isHtml ? content : escapeHtml(content)}</div>
+            `;
+            
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function addTyping() {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = 'message bot';
+            div.id = 'typing';
+            div.innerHTML = `
+                <div class="avatar bot">🌿</div>
+                <div class="message-bubble">
+                    <div class="typing"><span></span><span></span><span></span></div>
+                </div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function removeTyping() {
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatRecipeResponse(data) {
+            let html = '';
+            
+            // Classification badge
+            html += `
+                <div class="classification">
+                    🎯 ${data.classification.category}
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${data.classification.confidence * 100}%"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Ingredients preview
+            if (data.ingredients && data.ingredients.length > 0) {
+                html += `<p style="margin-bottom: 0.5rem;">Using beneficial ingredients:</p>`;
+                html += `<div class="ingredients-preview">`;
+                data.ingredients.forEach(ing => {
+                    html += `<span class="ing-tag">${ing.name}</span>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Recipe card
+            html += `
+                <div class="recipe-card">
+                    <div class="recipe-header">
+                        <h3>🍽️ Generated Recipe</h3>
+                    </div>
+                    <div class="recipe-body">${formatRecipeText(data.recipe)}</div>
+                </div>
+            `;
+            
+            // Disclaimer
+            html += `
+                <div class="disclaimer">
+                    ⚕️ ${data.disclaimer}
+                </div>
+            `;
+            
+            return html;
+        }
+
+        function formatRecipeText(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^(🍽️.*|📝.*|👨‍🍳.*|💚.*|⏱️.*|🍴.*)/gm, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+        }
+
+        async function sendQuery() {
+            const input = document.getElementById('queryInput');
+            const query = input.value.trim();
+            
+            if (!query) return;
+            
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            input.value = '';
+            
+            // Add user message
+            addMessage(query, true);
+            
+            // Show typing
+            addTyping();
+            document.getElementById('loadingOverlay').classList.add('active');
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, num_ingredients: 8 })
+                });
+                
+                const data = await res.json();
+                
+                removeTyping();
+                document.getElementById('loadingOverlay').classList.remove('active');
+                
+                if (data.success) {
+                    addMessage(formatRecipeResponse(data), false, true);
+                } else {
+                    addMessage(`Sorry, I encountered an error: ${data.error || 'Unknown error'}`, false);
+                }
+                
+            } catch (err) {
+                removeTyping();
+                document.getElementById('loadingOverlay').classList.remove('active');
+                addMessage('Sorry, I could not connect to the server. Please ensure the API is running.', false);
+            }
+            
+            sendBtn.disabled = false;
+            input.focus();
+        }
+    </script>
+</body>
+</html>

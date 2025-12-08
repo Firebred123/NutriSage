@@ -1,0 +1,148 @@
+{
+  "ailment_categories": [
+    {
+      "category": "Heart Health",
+      "keywords": ["heart", "cardiovascular", "cholesterol", "blood pressure", "hypertension", "cardiac", "circulation", "arteries", "veins", "atherosclerosis", "chest pain", "heart attack", "coronary"],
+      "db_categories": ["Heart Health", "Mood and Heart", "Immune and Heart"],
+      "description": "Cardiovascular health including heart disease, cholesterol management, and blood pressure regulation"
+    },
+    {
+      "category": "Digestive Health",
+      "keywords": ["stomach", "digestion", "bloating", "gas", "constipation", "diarrhea", "indigestion", "heartburn", "acid reflux", "nausea", "IBS", "gut", "intestinal", "bowel", "gastric", "ulcer", "digestive"],
+      "db_categories": ["Digestive Health", "Digestive Issues"],
+      "description": "Issues related to the digestive system including stomach problems, bowel irregularities, and gastrointestinal discomfort"
+    },
+    {
+      "category": "Inflammation",
+      "keywords": ["inflammation", "swelling", "arthritis", "joint pain", "muscle pain", "soreness", "aches", "chronic pain", "inflammatory", "joints", "aching"],
+      "db_categories": ["Inflammation", "Joint Health"],
+      "description": "Chronic or acute inflammation affecting joints, muscles, or throughout the body"
+    },
+    {
+      "category": "Immune Support",
+      "keywords": ["immunity", "immune", "cold", "flu", "infection", "virus", "bacterial", "sick", "illness", "fever", "weakness", "getting sick"],
+      "db_categories": ["Immune Support", "Immune and Heart", "Energy and Immunity"],
+      "description": "Strengthening the immune system and fighting off infections"
+    },
+    {
+      "category": "Sleep Support",
+      "keywords": ["sleep", "insomnia", "restless", "can't sleep", "sleepless", "nighttime", "restlessness", "sleeping", "drowsy"],
+      "db_categories": ["Sleep Support", "Sleep Issues"],
+      "description": "Sleep disorders and difficulties including insomnia and poor sleep quality"
+    },
+    {
+      "category": "Cognitive Health",
+      "keywords": ["brain", "memory", "focus", "concentration", "mental", "cognitive", "brain fog", "forgetful", "thinking", "clarity", "dementia", "alzheimer", "mind"],
+      "db_categories": ["Cognitive Health", "Brain Health", "Focus and Energy"],
+      "description": "Brain health, memory, focus, and cognitive function"
+    },
+    {
+      "category": "Energy Support",
+      "keywords": ["energy", "fatigue", "tired", "exhausted", "lethargic", "weak", "no energy", "drained", "burnout", "sluggish", "low energy"],
+      "db_categories": ["Energy Support", "Energy and Muscles", "Energy and Immunity", "Energy and Brain", "Energy and Nutrition", "Energy and Mood", "Energy and Lungs", "Energy and Hormones", "Energy and Allergies", "Focus and Energy", "Stress and Energy", "Skin and Energy"],
+      "description": "Low energy levels, chronic fatigue, and overall vitality"
+    },
+    {
+      "category": "Stress Relief",
+      "keywords": ["stress", "anxiety", "nervous", "worried", "panic", "tension", "overwhelmed", "anxious", "stressed out", "calm", "relaxation"],
+      "db_categories": ["Stress Relief", "Stress and Energy", "Liver and Stress"],
+      "description": "Mental stress, anxiety disorders, and nervous tension"
+    },
+    {
+      "category": "Blood Sugar",
+      "keywords": ["blood sugar", "diabetes", "glucose", "insulin", "diabetic", "sugar levels", "hyperglycemia", "hypoglycemia", "glycemic"],
+      "db_categories": ["Blood Sugar"],
+      "description": "Blood sugar regulation and diabetes management"
+    },
+    {
+      "category": "Blood Building",
+      "keywords": ["anemia", "iron", "blood cells", "hemoglobin", "pale", "bleeding", "clotting", "low iron", "iron deficiency"],
+      "db_categories": ["Blood Building", "Blood Health"],
+      "description": "Blood-related conditions including anemia and circulation issues"
+    },
+    {
+      "category": "Bone Health",
+      "keywords": ["bones", "osteoporosis", "calcium", "fracture", "bone density", "skeletal", "cartilage", "brittle bones"],
+      "db_categories": ["Bone Health"],
+      "description": "Bone density, strength, and skeletal health"
+    },
+    {
+      "category": "Skin Health",
+      "keywords": ["skin", "acne", "eczema", "psoriasis", "dry skin", "rash", "dermatitis", "wrinkles", "aging skin", "complexion", "skin problems"],
+      "db_categories": ["Skin Health", "Skin and Energy", "Thyroid and Skin"],
+      "description": "Skin conditions and overall skin health and appearance"
+    },
+    {
+      "category": "Respiratory Health",
+      "keywords": ["breathing", "respiratory", "lungs", "cough", "asthma", "bronchitis", "congestion", "sinus", "shortness of breath", "wheezing"],
+      "db_categories": ["Respiratory Health", "Respiratory Issues", "Energy and Lungs"],
+      "description": "Respiratory system health including lung function and breathing difficulties"
+    },
+    {
+      "category": "Eye Health",
+      "keywords": ["eyes", "vision", "sight", "eyesight", "macular", "cataracts", "eye strain", "dry eyes", "blurry", "seeing"],
+      "db_categories": ["Eye Health"],
+      "description": "Vision and overall eye health"
+    },
+    {
+      "category": "Liver Health",
+      "keywords": ["liver", "detox", "toxins", "fatty liver", "hepatic", "gallbladder", "bile", "jaundice", "liver cleanse"],
+      "db_categories": ["Liver Health", "Liver and Stress", "Detox Support"],
+      "description": "Liver function, detoxification, and hepatic health"
+    },
+    {
+      "category": "Kidney Health",
+      "keywords": ["kidney", "renal", "urinary", "UTI", "bladder", "water retention", "kidney stones", "nephritis"],
+      "db_categories": ["Kidney Health", "Urinary Health"],
+      "description": "Kidney function and urinary system health"
+    },
+    {
+      "category": "Hormone Balance",
+      "keywords": ["hormones", "menopause", "PMS", "estrogen", "testosterone", "endocrine", "menstrual", "period", "hot flashes", "hormone"],
+      "db_categories": ["Hormone Balance", "Energy and Hormones"],
+      "description": "Hormonal balance and endocrine system health"
+    },
+    {
+      "category": "Thyroid Health",
+      "keywords": ["thyroid", "hypothyroid", "hyperthyroid", "goiter", "metabolism", "thyroid problems"],
+      "db_categories": ["Thyroid Health", "Thyroid and Skin"],
+      "description": "Thyroid function and metabolic regulation"
+    },
+    {
+      "category": "Weight Management",
+      "keywords": ["weight", "obesity", "overweight", "weight loss", "fat", "BMI", "diet", "appetite", "slim"],
+      "db_categories": ["Weight Management"],
+      "description": "Weight management, metabolism, and healthy body composition"
+    },
+    {
+      "category": "Muscle Health",
+      "keywords": ["muscle", "cramps", "spasms", "muscle building", "strength", "muscle recovery", "workout", "exercise", "athletic"],
+      "db_categories": ["Muscle Health", "Energy and Muscles"],
+      "description": "Muscle function, recovery, and strength"
+    },
+    {
+      "category": "Mood Support",
+      "keywords": ["mood", "depression", "sad", "unhappy", "melancholy", "blues", "emotional", "low mood", "hopeless", "depressed"],
+      "db_categories": ["Mood Support", "Mood and Heart", "Energy and Mood"],
+      "description": "Emotional wellbeing and mood disorders"
+    },
+    {
+      "category": "Cancer Prevention",
+      "keywords": ["cancer", "tumor", "antioxidant", "carcinogen", "prevention", "anti-cancer"],
+      "db_categories": ["Cancer Prevention", "Antioxidant Support"],
+      "description": "Foods that may help with cancer prevention through antioxidants"
+    },
+    {
+      "category": "Allergy Support",
+      "keywords": ["allergy", "allergies", "allergic", "histamine", "hay fever", "seasonal allergies", "food allergy"],
+      "db_categories": ["Allergy Support", "Allergy-Friendly", "Energy and Allergies"],
+      "description": "Managing allergies and allergic reactions"
+    },
+    {
+      "category": "Hydration",
+      "keywords": ["hydration", "dehydrated", "thirst", "dry mouth", "water", "fluid"],
+      "db_categories": ["Hydration"],
+      "description": "Maintaining proper hydration levels"
+    }
+  ]
+}
