@@ -1,36 +1,76 @@
 # NutriSage
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+A RAG (Retrieval-Augmented Generation) application that generates personalized health-focused recipes based on your health concerns.
 
-> A brief description of what this project does and the problem it solves.
+## What it does
 
-## 📋 Prerequisites
+1. You describe a health concern (e.g., "I have trouble sleeping")
+2. The system classifies it into a health category using AI
+3. It retrieves beneficial ingredients from a database of 260+ items
+4. A local LLM generates a personalized recipe using those ingredients
 
-Before you begin, ensure you have met the following requirements:
-* **Node.js** (v14 or higher)
-* **npm** or **yarn**
+## Requirements
 
-## 🚀 Installation
+- Python 3.8+
+- Ollama installed ([ollama.ai](https://ollama.ai))
+- ~6GB RAM
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/username/project-name.git](https://github.com/username/project-name.git)
-    ```
-
-2.  **Navigate to the project directory:**
-    ```bash
-    cd project-name
-    ```
-
-3.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-
-## 🔧 Usage
-
-To run the application in development mode:
+## Installation
 
 ```bash
-npm run dev
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Pull the Mistral model for Ollama
+ollama pull mistral
+```
+
+## Running the Application
+
+### Option 1: Web Interface
+
+```bash
+# Start Ollama (in a separate terminal)
+ollama serve
+
+# Run the web server
+python app.py
+```
+
+Open http://localhost:5000 in your browser.
+
+### Option 2: Command Line
+
+```bash
+# Start Ollama (in a separate terminal)
+ollama serve
+
+# Run interactive CLI
+python nutrisage_rag.py
+```
+
+## Project Files
+
+| File | Description |
+|------|-------------|
+| `nutrisage_rag.py` | Core RAG system |
+| `app.py` | Flask web server |
+| `nutrisage_web.html` | Web interface |
+| `nutri_sage_ingredients.csv` | Ingredient database |
+| `requirements.txt` | Python dependencies |
+
+## Example
+
+```
+You: I feel tired and have no energy
+
+NutriSage:
+- Classification: Low Energy and Fatigue (85% confidence)
+- Ingredients: Spinach, Banana, Oatmeal, Eggs...
+- Recipe: Energizing Morning Smoothie Bowl...
+```
+
+## Authors
+
+- Paarth Goyal (2022343)
+- Tarush Garg (2022537)
